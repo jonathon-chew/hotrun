@@ -1,24 +1,35 @@
 import sys
-from pyflags.flag import Flags
+from .pyflags.flag import Flags
 
-flag = Flags()
+def cli() -> Flags:
+    flag = Flags()
 
-flag.add([" --watch"], "", list[str])
-flag.add([" --ignore"], "", list[str], default=[".git", "venv"])
-flag.add([" --debounce"], "", float, default=2, validator=lambda x: x > 0.0)
-flag.add([" --no-diff"], "", bool)
-flag.add([" --clear"], "", bool, default=True)
-flag.add([" --once"], "", bool)
-flag.add([" --module"], "", bool)
-flag.add([" --env"], "", list[str])
-flag.add_file([" --python"], "")
-flag.add([" --track"], "", bool)
-flag.add([" --diff-mode"], "", bool, choices=["full", "simple", "none"])
-flag.add([" --profile"], "", str)
-flag.add([" --graph"], "", str)
-flag.add([" --affected"], "", bool)
+    flag.add(["--file"], "File you want to run if one of the watch file changes", str, default=sys.argv[1])
+    flag.add(["--arguments"], "List of arguments that need to be passed in to modify the script's behaviour", list[str])
+    flag.add(["--watch"], "Which files to watch", list[str])
+    flag.add(["--ignore"], "List of files to ignore", list[str], default=[".git", "venv"])
+    flag.add(["--debounce"], "The amount of time to check if the file has changed", float, default=2, validator=lambda x: x > 0.0)
+    flag.add(["--no-diff"], "", bool)
+    flag.add(["--clear"], "Clear the screen between printing so only the last test is visible", bool, default=True)
+    flag.add(["--once"], "Only run this once, dry run / testing the set up", bool)
+    flag.add(["--module"], "Run the said file as a python module instead of as a script", bool)
+    flag.add(["--env"], "The list of environment variables to set API_KEY=X", list[str], validator=lambda x: "=" in x)
+    flag.add_file(["--python"], "which python to use - defaults to the current one in the shell, inc. if a venv is active or not", validator=lambda x: "python" in x)
 
-flag.parse(sys.argv[1:])
+    # To be implimented
+    flag.add(["--track"], "", bool)
+    flag.add(["--diff-mode"], "", bool, choices=["full", "simple", "none"])
+    flag.add(["--profile"], "", str)
+    flag.add(["--graph"], "", str)
+    flag.add(["--affected"], "", bool)
+
+    flag.add(["--help"], "See the possible flags", bool)
+
+    flag.parse(sys.argv[1:])
+
+    return flag
+
+cli()
 
 """
 1. Script + args
