@@ -1,6 +1,6 @@
-import os, sys, subprocess, time
+import os, sys, time
 
-from .utils import get_watch_files, clear_screen, check_file_updated, run_commands, poll_changes, should_run
+from .utils import get_watch_files, poll_changes, should_run, orchestrate
 from .cli import cli as commands
 from .Adonis import PrintWarning, PrintError
 
@@ -42,20 +42,10 @@ while True:
     changed = poll_changes(watch_files, last_updated)
 
     if should_run(changed):
-        print("────────────────────────────")
-        if cli.clear:
-            clear_screen()
-
-        run_time = run_commands(counter, cli)
-        counter += 1
-        print("────────────────────────────")
-
-        # time.sleep(10.0)
-        print("watching for changes...")
+        counter, run_time = orchestrate(counter, cli)
 
     if cli.once and should_run(changed):
-        assert isinstance(run_time, float) #type: ignore
-        print(f"✔ complete complete ({run_time})")
+        print(f"✔ complete complete ({run_time})") # type: ignore
         sys.exit(0)
 
     time.sleep(cli.debounce)

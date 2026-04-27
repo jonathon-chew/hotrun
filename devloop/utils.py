@@ -64,3 +64,17 @@ def poll_changes(watch_files: list[str], last_updated: dict[str, float]):
 
 def should_run(changed_files):
     return len(changed_files) > 0
+
+def orchestrate(counter: int, cli):
+    print("────────────────────────────")
+    if cli.clear:
+        clear_screen()
+
+    run_time = run_commands(counter, cli)
+    counter += 1
+    print("────────────────────────────")
+
+    # time.sleep(10.0)
+    print("watching for changes...")
+
+    return counter, run_time
