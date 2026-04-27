@@ -1,0 +1,8 @@
+# Folders
+docs/*
+*venv
+__pycache__
+Adonis
+pyflags
+
+# Files
