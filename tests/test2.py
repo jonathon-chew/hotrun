@@ -6,12 +6,11 @@ from contextlib import redirect_stdout
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 
-import devloop
-
+import hotrun
 
 class PackageFunctionTests(unittest.TestCase):
     def test_get_watch_files_removes_ignored_entries(self):
-        watch_files = devloop.get_watch_files(
+        watch_files = hotrun.get_watch_files(
             ["app.py", ".git", "src", "venv", "README.md"],
             ignore=[".git", "venv"],
         )
@@ -23,10 +22,10 @@ class PackageFunctionTests(unittest.TestCase):
             temp_path = pathlib.Path(handle.name)
 
         try:
-            mtime = devloop.check_file_updated(str(temp_path))
+            mtime = hotrun.check_file_updated(str(temp_path))
             self.assertIsInstance(mtime, float)
             self.assertGreater(mtime, 0)
-            self.assertEqual(devloop.check_file_updated(str(temp_path) + ".missing"), 0)
+            self.assertEqual(hotrun.check_file_updated(str(temp_path) + ".missing"), 0)
         finally:
             temp_path.unlink(missing_ok=True)
 
@@ -36,7 +35,7 @@ class PackageFunctionTests(unittest.TestCase):
         stderr_printer = Mock()
 
         with redirect_stdout(io.StringIO()) as buffer:
-            result = devloop.run_commands(
+            result = hotrun.run_commands(
                 ["python", "script.py"],
                 3,
                 arguments=["--flag", "value"],

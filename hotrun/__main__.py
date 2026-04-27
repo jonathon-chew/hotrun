@@ -28,7 +28,7 @@ if len(watch_files) < 1:
     PrintError("[Error]: No files found to watch")
     sys.exit(1)
 
-print("[devloop] starting...")
+print("[hotrun] starting...")
 counter = 1
 last_updated = {}
 for f in watch_files:

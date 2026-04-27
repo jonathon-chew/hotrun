@@ -1,7 +1,7 @@
-# Devloop
+# Hotrun
 
 ## Summary
-`devloop` is a small Python watcher that reruns a script when files change. The project is aiming for a developer-friendly loop for local iteration: run a script, watch relevant files, and surface useful feedback without making the terminal feel noisy.
+`hotrun` is a small Python watcher that reruns a script when files change. The project is aiming for a developer-friendly loop for local iteration: run a script, watch relevant files, and surface useful feedback without making the terminal feel noisy.
 
 ## What This Project Demonstrates
 - Python command-line parsing and script entrypoints
@@ -33,31 +33,31 @@
 The project currently exposes its entrypoint through the package module:
 
 ```bash
-python3 -m devloop script.py
+python3 -m hotrun script.py
 ```
 
 With arguments:
 
 ```bash
-python3 -m devloop script.py -- arg1 arg2
+python3 -m hotrun script.py -- arg1 arg2
 ```
 
 Example watch mode:
 
 ```bash
-python3 -m devloop script.py --watch src/ tests/
+python3 -m hotrun script.py --watch src/ tests/
 ```
 
 Example one-shot mode:
 
 ```bash
-python3 -m devloop script.py --once
+python3 -m hotrun script.py --once
 ```
 
 ## Example Workflow
 
 ```bash
-python3 -m devloop app.py --watch app.py src/ --ignore .git venv --debounce 0.5
+python3 -m hotrun app.py --watch app.py src/ --ignore .git venv --debounce 0.5
 ```
 
 Typical intent:
@@ -89,7 +89,7 @@ Some of these are part of the intended product direction rather than a fully fin
 
 ## Why This Is Different
 
-Most simple file watchers stop at "rerun on save." `devloop` is trying to become more opinionated than that:
+Most simple file watchers stop at "rerun on save." `hotrun` is trying to become more opinionated than that:
 - show the command that ran
 - keep restart behavior understandable
 - preserve a clean loop for repeated local edits

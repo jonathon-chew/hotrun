@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CLI_PATH = ROOT / "devloop" / "cli.py"
+CLI_PATH = ROOT / "hotrun" / "cli.py"
 
 
 class FakeFlags:
@@ -43,7 +43,7 @@ class CliModuleTests(unittest.TestCase):
             },
             clear=False,
         ):
-            spec = importlib.util.spec_from_file_location("devloop_cli_test", CLI_PATH)
+            spec = importlib.util.spec_from_file_location("hotrun_cli_test", CLI_PATH)
             module = importlib.util.module_from_spec(spec)
             old_argv = sys.argv[:]
             sys.argv = ["cli.py", "--watch", "src/", "--once"]
