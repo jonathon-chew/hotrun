@@ -20,6 +20,7 @@ else:
         for name in files:
             full_path = os.path.join(root, name)
             split_file_path = full_path.split(os.sep)
+            # Check both list, if anything from a is in b continue the loop
             if any(i in cli.ignore for i in split_file_path):
                 continue
             file_dir.append(full_path)
