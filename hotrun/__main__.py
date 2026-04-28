@@ -1,6 +1,6 @@
-import os, sys, time
+import os, sys, time, subprocess
 
-from .utils import get_watch_files, poll_changes, should_run, orchestrate
+from .utils import get_watch_files, poll_changes, should_run, clear_screen
 from .cli import cli as commands
 from .Adonis import PrintWarning, PrintError
 
@@ -44,9 +44,33 @@ class State:
         self.files_changed = 0 # debounce means I need to track this
         self.cli = cli
         self.execution_time = 0.0
+        self.running = False
+        self.pending = False
 
         self._start_time = time.time()
         self._total_files_changed = 0
+    
+    def _run_commands(self):
+        print(self.cli.debug_flags())
+        start = time.time()
+
+        if self.cli.module:
+            commands = [sys.executable, "-m", self.cli.file]
+        else:
+            commands = [sys.executable, self.cli.file]
+
+        output = subprocess.run(commands, capture_output=True, text=True)
+
+        if output.stderr:
+            PrintError(str(output.stderr))
+
+        if output.stdout:
+            print(output.stdout)
+        
+        self.execution_time = round(time.time() - start, 2)
+        self.incriment_counter()
+
+        print(f"✔ run #{self.counter} complete ({self.execution_time})")
     
     def mark_change(self, count):
         self.dirty = True
@@ -60,6 +84,24 @@ class State:
 
     def incriment_counter(self):
         self.counter += 1
+
+    def run(self):
+        self.running = True
+        if self.cli.clear:
+            clear_screen()
+    
+        print(f"files changed: {self.files_changed}")
+        print("────────────────────────────")
+        try:
+            self._run_commands()
+        except Exception as e:
+            PrintError(str(e))
+        print("────────────────────────────")
+
+        # time.sleep(10.0)
+        print("watching for changes...")
+        self.running = False
+
 
 state = State()
 
@@ -76,14 +118,23 @@ while True:
     now = time.time() # set every time as needs to be tracked
 
     if should_run(changed):
-        state.mark_change(len(set(changed)))
+        if state.running:
+            state.pending = True
+        else:
+            state.mark_change(len(set(changed)))
 
-    if state.dirty and (now - state.last_change > cli.debounce):
-        orchestrate(state)
-        state.reset()
+    if state.dirty and not state.running and (now - state.last_change > cli.debounce):
+        state.run()
 
-    if cli.once and should_run(changed):
-        print(f"✔ complete complete ({state.execution_time})") # type: ignore
-        sys.exit(0)
+        if state.pending:
+            state.last_change = time.time()
+            state.dirty = True
+            state.pending = False
+        else:
+            state.reset()
+
+        if cli.once:
+            print(f"✔ complete complete ({state.execution_time})") # type: ignore
+            sys.exit(0)
 
     time.sleep(0.1)
