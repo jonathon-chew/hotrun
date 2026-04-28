@@ -39,7 +39,7 @@ python3 -m hotrun script.py
 With arguments:
 
 ```bash
-python3 -m hotrun script.py -- arg1 arg2
+python3 -m hotrun script.py --arguments arg1 arg2
 ```
 
 Example watch mode:
