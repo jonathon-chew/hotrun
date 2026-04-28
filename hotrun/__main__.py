@@ -17,9 +17,13 @@ else:
     print(f"using current directory:{os.path.dirname(os.path.realpath(__file__))}")
     file_dir = []
     for root, dirs, files in os.walk("."):
+
+        dirs[:] = [d for d in dirs if d not in cli.ignore]
+
         for name in files:
-            if dirs not in cli.ignore or files not in cli.ignore or root not in cli.ignore: # ignore files/folders that should be!
+            if name not in cli.ignore: # ignore files/folders that should be!
                 file_dir.append(os.path.join(root, name))
+                
     watch_files = get_watch_files(file_dir, cli)
 
 watch_files = [ f for f in watch_files if os.path.isfile(f) ]
@@ -28,7 +32,7 @@ if len(watch_files) < 1:
     PrintError("[Error]: No files found to watch")
     sys.exit(1)
 
-print("[hotrun] starting...")
+print("[devloop] starting...")
 counter = 1
 last_updated = {}
 for f in watch_files:
