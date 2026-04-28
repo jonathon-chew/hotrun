@@ -10,6 +10,9 @@ if cli.help:
     cli.help_text_ordered()
     sys.exit(0)
 
+# Quick hack for now! As the flag package isn't quite working as I would like it to 
+cli.ignore.append(".git") if cli.ignore == [] else cli.ignore
+    
 if cli.watch:
     watch_files = get_watch_files(cli.watch, cli)
 else:
@@ -88,20 +91,22 @@ class State:
 
     def run(self):
         self.running = True
-        if self.cli.clear:
-            clear_screen()
-    
-        print(f"files changed: {self.files_changed}")
-        print("────────────────────────────")
         try:
-            self._run_commands()
-        except Exception as e:
-            PrintError(str(e))
-        print("────────────────────────────")
+            if self.cli.clear:
+                clear_screen()
+        
+            print(f"files changed: {self.files_changed}")
+            print("────────────────────────────")
+            try:
+                self._run_commands()
+            except Exception as e:
+                PrintError(str(e))
+            print("────────────────────────────")
 
-        # time.sleep(10.0)
-        print("watching for changes...")
-        self.running = False
+            # time.sleep(10.0)
+            print("watching for changes...")
+        finally:
+            self.running = False
 
 
 state = State()
