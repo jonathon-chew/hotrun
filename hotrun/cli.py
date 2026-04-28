@@ -7,7 +7,7 @@ def cli() -> Flags:
     flag.add(["--file"], "File you want to run if one of the watch file changes", str, default=sys.argv[1])
     flag.add(["--arguments"], "List of arguments that need to be passed in to modify the script's behaviour", list[str])
     flag.add(["--watch"], "Which files to watch", list[str])
-    flag.add(["--ignore"], "List of files to ignore", list[str], default=[".git", "venv"])
+    flag.add(["--ignore"], "List of files to ignore", list[str], default=".git")
     flag.add(["--debounce"], "The amount of time to check if the file has changed", float, default=2, validator=lambda x: x > 0.0)
     flag.add(["--no-diff"], "", bool)
     flag.add(["--clear"], "Clear the screen between printing so only the last test is visible", bool, default=True)
