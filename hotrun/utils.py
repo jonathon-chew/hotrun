@@ -28,14 +28,14 @@ def check_file_updated(file_path: str) -> float:
     except Exception as e:
         raise ValueError(e)
 
-def run_commands(counter: int, cli: Any) -> float:
-    print(cli.debug_flags())
+def run_commands(state) -> float:
+    print(state.cli.debug_flags())
     start = time.time()
 
-    if cli.module:
-        commands = [sys.executable, "-m", cli.file]
+    if state.cli.module:
+        commands = [sys.executable, "-m", state.cli.file]
     else:
-        commands = [sys.executable, cli.file]
+        commands = [sys.executable, state.cli.file]
 
     output = subprocess.run(commands, capture_output=True, text=True)
 
@@ -44,18 +44,21 @@ def run_commands(counter: int, cli: Any) -> float:
 
     if output.stdout:
         print(output.stdout)
+    
+    state.execution_time = round(time.time() - start, 2)
 
-    print(f"✔ run #{counter} complete ({round(time.time() - start, 2)})")
+    print(f"✔ run #{state.counter} complete ({state.execution_time})")
     
     return round(time.time() - start, 2)
 
-def poll_changes(watch_files: list[str], last_updated: dict[str, float]):
+def poll_changes(watch_files: list[str], last_updated: dict[str, float]) -> list[str]:
     changed = []
     for i in watch_files:
         try:
             file_update_time = check_file_updated(i)
         except FileNotFoundError:
             continue
+
         if file_update_time > last_updated[i]:
             changed.append(i)
             last_updated[i] = file_update_time
@@ -65,16 +68,17 @@ def poll_changes(watch_files: list[str], last_updated: dict[str, float]):
 def should_run(changed_files):
     return len(changed_files) > 0
 
-def orchestrate(counter: int, cli):
-    print("────────────────────────────")
-    if cli.clear:
+def orchestrate(state):
+    if state.cli.clear:
         clear_screen()
-
-    run_time = run_commands(counter, cli)
-    counter += 1
+    
+    print(f"files changed: {state.files_changed}")
+    print("────────────────────────────")
+    state.execution_time = run_commands(state)
+    state.incriment_counter()
     print("────────────────────────────")
 
     # time.sleep(10.0)
     print("watching for changes...")
 
-    return counter, run_time
+    return

@@ -17,13 +17,13 @@ else:
     print(f"using current directory:{os.path.dirname(os.path.realpath(__file__))}")
     file_dir = []
     for root, dirs, files in os.walk("."):
-
-        dirs[:] = [d for d in dirs if d not in cli.ignore]
-
         for name in files:
-            if name not in cli.ignore: # ignore files/folders that should be!
-                file_dir.append(os.path.join(root, name))
-                
+            full_path = os.path.join(root, name)
+            split_file_path = full_path.split(os.sep)
+            if any(i in cli.ignore for i in split_file_path):
+                continue
+            file_dir.append(full_path)
+
     watch_files = get_watch_files(file_dir, cli)
 
 watch_files = [ f for f in watch_files if os.path.isfile(f) ]
@@ -32,24 +32,58 @@ if len(watch_files) < 1:
     PrintError("[Error]: No files found to watch")
     sys.exit(1)
 
-print("[devloop] starting...")
-counter = 1
-last_updated = {}
+## Finished basic set up - let's start setting the state of the programme!
+print("[hotrun] starting...")
+
+class State:
+    def __init__(self):
+        self.counter = 1
+        self.last_updated = {}
+        self.last_change = time.time()
+        self.dirty = False # key flag for tracking state
+        self.files_changed = 0 # debounce means I need to track this
+        self.cli = cli
+        self.execution_time = 0.0
+
+        self._start_time = time.time()
+        self._total_files_changed = 0
+    
+    def mark_change(self, count):
+        self.dirty = True
+        self.last_change = time.time()
+        self.files_changed += count
+        self._total_files_changed += count
+
+    def reset(self):
+        self.dirty = False
+        self.files_changed = 0
+
+    def incriment_counter(self):
+        self.counter += 1
+
+state = State()
+
 for f in watch_files:
     try:
-        last_updated[f] = os.path.getmtime(f)
+        state.last_updated[f] = os.path.getmtime(f)
     except:
-        last_updated[f] = 0
+        state.last_updated[f] = 0
 
 while True:
-
-    changed = poll_changes(watch_files, last_updated)
+    
+    # returns an array - so number of files changed can be used as a metric and presented to the user, also could be used for tracking / logging later on
+    changed = poll_changes(watch_files, state.last_updated) 
+    now = time.time() # set every time as needs to be tracked
 
     if should_run(changed):
-        counter, run_time = orchestrate(counter, cli)
+        state.mark_change(len(set(changed)))
+
+    if state.dirty and (now - state.last_change > cli.debounce):
+        orchestrate(state)
+        state.reset()
 
     if cli.once and should_run(changed):
-        print(f"✔ complete complete ({run_time})") # type: ignore
+        print(f"✔ complete complete ({state.execution_time})") # type: ignore
         sys.exit(0)
 
-    time.sleep(cli.debounce)
+    time.sleep(0.1)

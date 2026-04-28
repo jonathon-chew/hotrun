@@ -33,18 +33,18 @@ cli()
 
 """
 1. Script + args
-hotrun script.py -- arg1 arg2
+devloop script.py -- arg1 arg2
 2. --watch (optional override)
-hotrun script.py --watch src/ tests/
+devloop script.py --watch src/ tests/
 
 Default:
 
 auto-detect project root
 ignore .git, venv, etc.
 3. --ignore
-hotrun script.py --ignore data/ logs/
+devloop script.py --ignore data/ logs/
 4. --debounce
-hotrun script.py --debounce 200
+devloop script.py --debounce 200
 
 (milliseconds)
 
@@ -52,23 +52,23 @@ hotrun script.py --debounce 200
 
 Turn off your key feature if needed:
 
-hotrun script.py --no-diff
+devloop script.py --no-diff
 6. --clear
 
 Clear terminal between runs:
 
-hotrun script.py --clear
+devloop script.py --clear
 7. --once
 
 Run once, no watching (useful for consistency):
 
-hotrun script.py --once
+devloop script.py --once
 🧠 Slightly more advanced (still reasonable)
 8. --module
 
 Run as module:
 
-hotrun -m mypackage.script -- arg1
+devloop -m mypackage.script -- arg1
 
 Equivalent to:
 
@@ -77,12 +77,12 @@ python -m mypackage.script
 
 Inject env vars:
 
-hotrun script.py --env DEBUG=1 --env API_URL=...
+devloop script.py --env DEBUG=1 --env API_URL=...
 10. --python
 
 Custom interpreter:
 
-hotrun script.py --python .venv/bin/python
+devloop script.py --python .venv/bin/python
 🔥 Your differentiator flags
 
 These support your unique ideas:
@@ -91,7 +91,7 @@ These support your unique ideas:
 
 Explicitly track variables (if you support patterns later):
 
-hotrun script.py --track x,y,result
+devloop script.py --track x,y,result
 
 (works alongside a track() API)
 
@@ -99,14 +99,14 @@ hotrun script.py --track x,y,result
 
 Control how diffs are shown:
 
-hotrun script.py --diff-mode simple
-hotrun script.py --diff-mode full
-hotrun script.py --diff-mode none
+devloop script.py --diff-mode simple
+devloop script.py --diff-mode full
+devloop script.py --diff-mode none
 13. --profile
 
 Basic timing info:
 
-hotrun script.py --profile
+devloop script.py --profile
 
 Output:
 
@@ -116,12 +116,12 @@ Run #5 | 0.42s (avg: 0.38s)
 
 Debug dependency graph:
 
-hotrun script.py --graph
+devloop script.py --graph
 15. --affected
 
 Only rerun if relevant files changed:
 
-hotrun script.py --affected
+devloop script.py --affected
 
 (This becomes meaningful once your dependency graph exists)
 """
