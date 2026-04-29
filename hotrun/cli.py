@@ -15,11 +15,11 @@ def cli() -> Flags:
     flag.add(["--module"], "Run the said file as a python module instead of as a script", bool)
     flag.add(["--env"], "The list of environment variables to set API_KEY=X", list[str], validator=lambda x: "=" in x)
     flag.add_file(["--python"], "which python to use - defaults to the current one in the shell, inc. if a venv is active or not", validator=lambda x: "python" in x)
+    flag.add(["--profile"], "Print out some more detailed stats", bool)
 
     # To be implimented
     flag.add(["--track"], "", bool)
     flag.add(["--diff-mode"], "", bool, choices=["full", "simple", "none"])
-    flag.add(["--profile"], "", str)
     flag.add(["--graph"], "", str)
     flag.add(["--affected"], "", bool)
 
