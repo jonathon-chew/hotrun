@@ -41,7 +41,7 @@ print("[hotrun] starting...")
 
 class State:
     def __init__(self):
-        self.counter = 1
+        self.counter = 0
         self.last_updated = {}
         self.last_change = time.time()
         self.dirty = False # key flag for tracking state
@@ -74,23 +74,27 @@ class State:
         else:
             commands = [sys.executable, self.cli.file]
 
-        output = subprocess.run(commands, capture_output=True, text=True)
+        output = subprocess.Popen(
+            args=commands, 
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True
+        )
 
-        if output.stderr:
-            PrintError(str(output.stderr))
+        assert output.stdout is not None
 
-        if output.stdout:
-            print(output.stdout)
+        for line in output.stdout:
+            print(line.strip())
         
         self.execution_time = round(time.time() - start, 2)
-        self.incriment_counters()
 
         # if they select profile - print the more detailed stats?!
         # Does this need to be in addition - instead of, only in the final?
         if cli.profile:
             self.print_stats() 
         print(f"✔ run #{self.counter} complete ({self.execution_time}) avg: {round(self._total_execution_time / self._total_files_changed, 5)}")
-    
+        self.incriment_counters()
+
     def mark_change(self, count):
         self.dirty = True
         self.last_change = time.time()
