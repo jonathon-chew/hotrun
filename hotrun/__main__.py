@@ -2,7 +2,7 @@ import os, sys, time, subprocess
 
 from .utils import get_watch_files, poll_changes, should_run, clear_screen
 from .cli import cli as commands
-from .Adonis import PrintWarning, PrintError
+from .Adonis import PrintWarning, PrintError, PrintTable
 
 cli = commands()
 
@@ -53,6 +53,17 @@ class State:
 
         self._start_time = time.time()
         self._total_files_changed = 0
+        self._total_execution_time = 0.0
+        self._stats = {}
+
+    def print_stats(self):
+        # Print table directly - printing self._stats isn't the same...
+        PrintTable({
+            "Running time": round(time.time() - self._start_time, 2),
+            "Total time spent executing": self._total_execution_time,
+            "Total files": self._total_files_changed,
+            "Arguments": cli.debug_flags()
+        })
     
     def _run_commands(self):
         print(self.cli.debug_flags())
@@ -72,22 +83,27 @@ class State:
             print(output.stdout)
         
         self.execution_time = round(time.time() - start, 2)
-        self.incriment_counter()
+        self.incriment_counters()
 
-        print(f"✔ run #{self.counter} complete ({self.execution_time})")
+        # if they select profile - print the more detailed stats?!
+        # Does this need to be in addition - instead of, only in the final?
+        if cli.profile:
+            self.print_stats() 
+        print(f"✔ run #{self.counter} complete ({self.execution_time}) avg: {round(self._total_execution_time / self._total_files_changed, 5)}")
     
     def mark_change(self, count):
         self.dirty = True
         self.last_change = time.time()
         self.files_changed += count
-        self._total_files_changed += count
 
     def reset(self):
         self.dirty = False
         self.files_changed = 0
 
-    def incriment_counter(self):
+    def incriment_counters(self):
         self.counter += 1
+        self._total_execution_time += self.execution_time
+        self._total_files_changed += self.files_changed
 
     def run(self):
         self.running = True
@@ -140,7 +156,7 @@ while True:
             state.reset()
 
         if cli.once:
-            print(f"✔ complete complete ({state.execution_time})") # type: ignore
+            print(f"✔ complete ({state.execution_time})") # type: ignore
             sys.exit(0)
 
     time.sleep(0.1)
