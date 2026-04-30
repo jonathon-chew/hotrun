@@ -30,6 +30,20 @@
 
 ## How To Run
 
+### Install from GitHub
+
+You can install `hotrun` straight from the GitHub repository with pip:
+
+```bash
+pip install git+https://github.com/jonathon-chew/hotrun.git
+```
+
+If you want to pin a specific version, replace `main` with a tag or commit hash:
+
+```bash
+pip install git+https://github.com/jonathon-chew/hotrun.git@main
+```
+
 The project currently exposes its entrypoint through the package module:
 
 ```bash
@@ -42,29 +56,49 @@ With arguments:
 python3 -m hotrun script.py --arguments arg1 arg2
 ```
 
-Example watch mode:
-
-```bash
-python3 -m hotrun script.py --watch src/ tests/
-```
-
-Example one-shot mode:
-
-```bash
-python3 -m hotrun script.py --once
-```
-
 ## Example Workflow
 
+`hotrun` shines when you are making repeated edits and want the next run to happen automatically. It is especially useful when the thing you are changing is small enough that restarting it by hand would slow you down more than the code itself.
+
+### Fast API or web app iteration
+
 ```bash
-python3 -m hotrun app.py --watch app.py src/ --ignore .git venv --debounce 0.5
+python3 -m hotrun app.py --watch app.py src/ tests/ --ignore .git venv __pycache__ --debounce 0.5
 ```
 
-Typical intent:
-- start the watcher
-- run `app.py`
-- restart when a watched file changes
-- keep the terminal readable between runs
+Use this when you are tweaking request handlers, service code, templates, or test helpers and want a quick rerun after every save.
+
+Good fit for:
+- Flask or FastAPI prototypes
+- small internal tools
+- backend endpoints with a few support modules
+
+### Data scripts and automation jobs
+
+```bash
+python3 -m hotrun scripts/rebuild_report.py --watch scripts/ data/ configs/ --ignore .git venv --once
+```
+
+This works well for report builders, file transforms, import jobs, and any repeatable command that depends on local inputs or config files.
+
+Good fit for:
+- CSV or JSON transformations
+- scheduled job prototypes
+- one-off maintenance scripts you keep refining
+
+### Package modules and library entrypoints
+
+```bash
+python3 -m hotrun hotrun.worker --module --watch hotrun/ --ignore .git venv --profile
+```
+
+Use module mode when the code you are changing lives inside a package and you want to exercise the package the same way your users or tests will.
+
+Where `hotrun` tends to shine most:
+- frequent save-and-check loops
+- scripts that are annoying to relaunch manually
+- local tooling and automation
+- workflows where you care about output and iteration speed more than stepping through a debugger
 
 ## CLI Surface
 
@@ -73,17 +107,12 @@ The current CLI definitions include:
 - `--watch`
 - `--ignore`
 - `--debounce`
-- `--no-diff`
 - `--clear`
 - `--once`
 - `--module`
 - `--env`
 - `--python`
-- `--track`
-- `--diff-mode`
 - `--profile`
-- `--graph`
-- `--affected`
 
 Some of these are part of the intended product direction rather than a fully finished user experience yet.
 
