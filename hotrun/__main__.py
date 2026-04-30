@@ -2,7 +2,7 @@ import os, sys, time, subprocess
 
 from .utils import get_watch_files, poll_changes, should_run, clear_screen
 from .cli import cli as commands
-from .Adonis import PrintWarning, PrintError, PrintTable
+from .Adonis import PrintWarning, PrintError, PrintTable, PrintInfo
 
 cli = commands()
 
@@ -88,12 +88,14 @@ class State:
         
         self.execution_time = round(time.time() - start, 2)
 
+        self.incriment_counters()
+
+        print(f"✔ run #{self.counter} complete ({self.execution_time}) avg: {round(self._total_execution_time / self._total_files_changed, 5)}")
+
         # if they select profile - print the more detailed stats?!
         # Does this need to be in addition - instead of, only in the final?
         if cli.profile:
-            self.print_stats() 
-        print(f"✔ run #{self.counter} complete ({self.execution_time}) avg: {round(self._total_execution_time / self._total_files_changed, 5)}")
-        self.incriment_counters()
+            self.print_stats()
 
     def mark_change(self, count):
         self.dirty = True
@@ -107,7 +109,7 @@ class State:
     def incriment_counters(self):
         self.counter += 1
         self._total_execution_time += self.execution_time
-        self._total_files_changed += self.files_changed
+        self._total_files_changed += self.files_changed 
 
     def run(self):
         self.running = True
