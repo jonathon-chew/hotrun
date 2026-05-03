@@ -12,7 +12,7 @@ if cli.help:
 
 # Quick hack for now! As the flag package isn't quite working as I would like it to 
 cli.ignore.append(".git") if cli.ignore == [] else cli.ignore
-    
+
 if cli.watch:
     watch_files = get_watch_files(cli.watch, cli)
 else:
@@ -70,9 +70,9 @@ class State:
         start = time.time()
 
         if self.cli.module:
-            commands = [sys.executable, "-m", self.cli.file]
+            commands = [cli.python, "-m", self.cli.file]
         else:
-            commands = [sys.executable, self.cli.file]
+            commands = [cli.python, self.cli.file]
 
         output = subprocess.Popen(
             args=commands, 

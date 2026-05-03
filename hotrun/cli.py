@@ -13,7 +13,7 @@ def cli() -> Flags:
     flag.add(["--once"], "Only run this once, dry run / testing the set up", bool)
     flag.add(["--module"], "Run the said file as a python module instead of as a script", bool)
     flag.add(["--env"], "The list of environment variables to set API_KEY=X", list[str], validator=lambda x: "=" in x)
-    flag.add_file(["--python"], "which python to use - defaults to the current one in the shell, inc. if a venv is active or not", validator=lambda x: "python" in x)
+    flag.add_file(["--python"], "which python to use - defaults to the current one in the shell, inc. if a venv is active or not", validator=lambda x: "python" in x, default=sys.executable)
     flag.add(["--profile"], "Print out some more detailed stats", bool)
 
     # To be implimented
