@@ -73,6 +73,9 @@ class State:
             commands = [cli.python, "-m", self.cli.file]
         else:
             commands = [cli.python, self.cli.file]
+        
+        if self.cli.arguments:
+            commands.append(self.cli.arguments)
 
         output = subprocess.Popen(
             args=commands, 
