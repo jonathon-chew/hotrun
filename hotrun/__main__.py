@@ -75,7 +75,7 @@ class State:
             commands = [cli.python, self.cli.file]
         
         if self.cli.arguments:
-            commands.append(self.cli.arguments)
+            commands = commands + self.cli.arguments
 
         output = subprocess.Popen(
             args=commands, 
