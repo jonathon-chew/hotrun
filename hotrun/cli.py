@@ -1,5 +1,5 @@
 import sys
-from .pyflags.flag import Flags
+from pyflags.flag import Flags
 
 def cli() -> Flags:
     flag = Flags()
@@ -28,8 +28,6 @@ def cli() -> Flags:
     flag.parse(sys.argv[1:])
 
     return flag
-
-cli()
 
 """
 1. Script + args

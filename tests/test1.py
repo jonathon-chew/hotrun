@@ -50,26 +50,29 @@ class CliModuleTests(unittest.TestCase):
             try:
                 assert spec.loader is not None
                 spec.loader.exec_module(module)
+                module.cli()
             finally:
                 sys.argv = old_argv
 
         self.assertEqual(
             [call[0][0] for call in fake_flags.add_calls],
             [
+                ["--file"],
                 ["--arguments"],
                 ["--watch"],
                 ["--ignore"],
                 ["--debounce"],
-                ["--no-diff"],
                 ["--clear"],
                 ["--once"],
                 ["--module"],
                 ["--env"],
-                ["--track"],
-                ["--diff-mode"],
                 ["--profile"],
+                ["--track"],
+                ["--no-diff"],
+                ["--diff-mode"],
                 ["--graph"],
                 ["--affected"],
+                ["--help"],
             ],
         )
         self.assertEqual([call[0][0] for call in fake_flags.add_file_calls], [["--python"]])
