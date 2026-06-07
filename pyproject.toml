@@ -1,15 +1,4 @@
 [build-system]
-requires = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name = "hotrun"
-version = "0.3.4"
-description = "A Python watcher that reruns scripts when files change"
-requires-python = ">=3.11"
-
-[tool.setuptools]
-include-package-data = true
-
-[tool.setuptools.packages.find]
-include = ["hotrun*"]
+requires = []
+build-backend = "build_backend"
+backend-path = ["."]

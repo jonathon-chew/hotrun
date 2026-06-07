@@ -1,10 +1,10 @@
 import sys
-from pyflags.flag import Flags
+from .pyflags.flag import Flags
 
-def cli() -> Flags:
+def cli(parse_arguments: list[str] | None = None) -> Flags:
     flag = Flags()
 
-    flag.add(["--file"], "File you want to run if one of the watch file changes", str, default=sys.argv[1])
+    flag.add(["--file"], "File you want to run if one of the watch file changes", str, default=None)
     flag.add(["--arguments"], "List of arguments that need to be passed in to modify the script's behaviour", list[str])
     flag.add(["--watch"], "Which files to watch", list[str])
     flag.add(["--ignore"], "List of files to ignore", list[str], default=[".git", "venv", "__pycache__"])
@@ -25,7 +25,7 @@ def cli() -> Flags:
 
     flag.add(["--help"], "See the possible flags", bool)
 
-    flag.parse(sys.argv[1:])
+    flag.parse(sys.argv[1:] if parse_arguments is None else parse_arguments)
 
     return flag
 

@@ -29,8 +29,8 @@ class FakeFlags:
 class CliModuleTests(unittest.TestCase):
     def test_cli_registers_expected_flags_and_parses_argv(self):
         fake_flags = FakeFlags()
-        fake_pyflags = types.ModuleType("pyflags")
-        fake_pyflags_flag = types.ModuleType("pyflags.flag")
+        fake_pyflags = types.ModuleType("hotrun.pyflags")
+        fake_pyflags_flag = types.ModuleType("hotrun.pyflags.flag")
         fake_pyflags_flag.Flags = lambda: fake_flags
         fake_pyflags.__path__ = []
         fake_pyflags.flag = fake_pyflags_flag
@@ -38,12 +38,12 @@ class CliModuleTests(unittest.TestCase):
         with patch.dict(
             sys.modules,
             {
-                "pyflags": fake_pyflags,
-                "pyflags.flag": fake_pyflags_flag,
+                "hotrun.pyflags": fake_pyflags,
+                "hotrun.pyflags.flag": fake_pyflags_flag,
             },
             clear=False,
         ):
-            spec = importlib.util.spec_from_file_location("hotrun_cli_test", CLI_PATH)
+            spec = importlib.util.spec_from_file_location("hotrun.cli", CLI_PATH)
             module = importlib.util.module_from_spec(spec)
             old_argv = sys.argv[:]
             sys.argv = ["cli.py", "--watch", "src/", "--once"]
